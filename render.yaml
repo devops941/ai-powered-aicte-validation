@@ -36,3 +36,4 @@ services:
           type: web
           name: aicte-docverify-backend
           property: host
+
