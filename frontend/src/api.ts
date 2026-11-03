@@ -4,7 +4,11 @@
 
 import { InstitutionApplication } from './types';
 
-const API_BASE = '/api';
+const rawBackend = import.meta.env.VITE_BACKEND_URL || '';
+const backendUrl = rawBackend
+  ? (rawBackend.startsWith('http') ? rawBackend : `https://${rawBackend}`)
+  : '';
+const API_BASE = `${backendUrl.replace(/\/$/, '')}/api`;
 
 export async function checkBackendHealth(): Promise<boolean> {
   try {

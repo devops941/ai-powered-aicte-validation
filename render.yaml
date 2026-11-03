@@ -1,0 +1,38 @@
+services:
+  # -------------------------------------------------------------
+  # Python Starlette / Uvicorn Backend API
+  # -------------------------------------------------------------
+  - type: web
+    name: aicte-docverify-backend
+    runtime: python
+    rootDir: verisense
+    plan: free
+    region: oregon
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m uvicorn api:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # -------------------------------------------------------------
+  # React + Vite Frontend Static Site
+  # -------------------------------------------------------------
+  - type: static_site
+    name: aicte-docverify-frontend
+    rootDir: frontend
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_BACKEND_URL
+        fromService:
+          type: web
+          name: aicte-docverify-backend
+          property: host
