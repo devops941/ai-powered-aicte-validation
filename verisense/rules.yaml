@@ -1,0 +1,179 @@
+# AICTE VeriSense - Rules & Document Checklist Configuration
+# Category: Extension of Approval (EoA) - Add a New Course
+
+category: "Extension of Approval: Add a New Course"
+academic_year: "2025-26"
+reference_validation_date: "2026-06-01"  # Academic year start benchmark
+
+# Checklist of all mandatory documents required for this application category
+checklist:
+  - document_type: "NOC"
+    description: "No Objection Certificate from Affiliating University / State DTE"
+    mandatory: true
+
+  - document_type: "Affidavit"
+    description: "Declaration on Rs. 100 Non-Judicial Stamp Paper (AICTE Format)"
+    mandatory: true
+
+  - document_type: "Faculty List"
+    description: "Proposed department faculty list with designations and qualifications"
+    mandatory: true
+
+  - document_type: "Land Document"
+    description: "Registered sale deed or government lease proving contiguous land ownership"
+    mandatory: true
+
+  - document_type: "Fire Certificate"
+    description: "Fire Safety Certificate issued by State Fire and Rescue Services Command"
+    mandatory: true
+
+
+# Regulatory Rules Catalog
+# To add a new rule: Simply add an entry here with the appropriate condition type!
+# Supported condition types:
+#   - document_presence: Checks if doc exists in application bundle
+#   - date_not_expired: Compares expiry_date against reference date
+#   - cross_document_match: Compares a field across multiple documents
+#   - numeric_threshold: Checks field value against >= or <= target
+#   - regex_format: Validates string format against a regular expression
+#   - text_clause_presence: Verifies mandatory legal phrases are present in text
+
+rules:
+  - id: "R-DOC-001"
+    name: "Mandatory Document Checklist Completeness"
+    description: "All 5 mandatory documents must be uploaded for Extension of Approval (New Course)."
+    severity: "CRITICAL"
+    weight: 30
+    condition:
+      type: "checklist_completeness"
+      required_docs: ["NOC", "Affidavit", "Faculty List", "Land Document", "Fire Certificate"]
+
+  - id: "R-NOC-001"
+    name: "NOC Validity for Proposed Academic Year"
+    description: "No Objection Certificate from State DTE/University must not be expired for Academic Year 2025-26."
+    severity: "CRITICAL"
+    weight: 25
+    condition:
+      type: "date_not_expired"
+      document: "NOC"
+      date_field: "expiry_date"
+      reference_date: "2026-06-01"
+
+  - id: "R-FIRE-001"
+    name: "Fire Safety Clearance Active Validity"
+    description: "Fire Safety Certificate must be currently active and not expired."
+    severity: "CRITICAL"
+    weight: 20
+    condition:
+      type: "date_not_expired"
+      document: "Fire Certificate"
+      date_field: "expiry_date"
+      reference_date: "2026-06-01"
+
+  - id: "R-NAME-001"
+    name: "Institution Name Consistency Across Documents"
+    description: "Institution name on all submitted documents must match without ambiguity or abbreviations."
+    severity: "WARNING"
+    weight: 15
+    condition:
+      type: "cross_document_match"
+      field: "institution_name"
+      documents: ["NOC", "Affidavit", "Land Document", "Fire Certificate"]
+      min_similarity: 90.0
+
+  - id: "R-ADDR-001"
+    name: "Campus Address Consistency Across Documents"
+    description: "Campus location and address stated across Affidavit and Fire Certificate must agree."
+    severity: "WARNING"
+    weight: 10
+    condition:
+      type: "cross_document_match"
+      field: "address"
+      documents: ["Affidavit", "Fire Certificate"]
+      min_similarity: 70.0
+
+  - id: "R-HIST-001"
+    name: "Historical AICTE Master Record Consistency"
+    description: "Institution name on the new application must match the AICTE historical permanent registration."
+    severity: "CRITICAL"
+    weight: 20
+    condition:
+      type: "historical_check"
+      check_type: "name_match"
+      min_similarity: 90.0
+
+  - id: "R-HIST-002"
+    name: "Approved Land Area Non-Reduction Check"
+    description: "Campus land area must not be less than the historically approved land area registered in AICTE records."
+    severity: "CRITICAL"
+    weight: 25
+    condition:
+      type: "historical_check"
+      check_type: "land_non_reduction"
+
+  - id: "R-LAND-001"
+    name: "Minimum Land Area Norm (AICTE Norm >= 2.0 Acres)"
+    description: "Titled educational institutional land area must be at least 2.00 Acres."
+    severity: "CRITICAL"
+    weight: 20
+    condition:
+      type: "numeric_threshold"
+      document: "Land Document"
+      field: "land_area"
+      operator: ">="
+      target_value: 2.0
+
+  - id: "R-LAND-002"
+    name: "Cross-Document Land Area Consistency"
+    description: "Land area affirmed in the Affidavit must match the area on the registered Land Document."
+    severity: "WARNING"
+    weight: 10
+    condition:
+      type: "cross_document_match"
+      field: "land_area"
+      documents: ["Land Document", "Affidavit"]
+
+  - id: "R-CERT-001"
+    name: "NOC Certificate Number Regulatory Format"
+    description: "NOC certificate number must follow the official state departmental format."
+    severity: "INFO"
+    weight: 5
+    condition:
+      type: "regex_format"
+      document: "NOC"
+      field: "certificate_number"
+      pattern: "^NOC\\/[A-Za-z0-9]+\\/[0-9]{4}\\/[A-Za-z0-9-]+$"
+
+  - id: "R-CERT-002"
+    name: "Fire Certificate Registration Number Format"
+    description: "Fire certificate must contain an authentic state registry alphanumeric identifier."
+    severity: "INFO"
+    weight: 5
+    condition:
+      type: "regex_format"
+      document: "Fire Certificate"
+      field: "certificate_number"
+      pattern: "^(?:FS\\/[A-Za-z]{2}|FC)\\/[0-9]{4}\\/[0-9]+$"
+
+  - id: "R-CADRE-001"
+    name: "Faculty Cadre & Ratio Norm Affirmation"
+    description: "Affidavit or Faculty List must explicitly commit to the AICTE teacher ratio and Cadre ratio."
+    severity: "WARNING"
+    weight: 10
+    condition:
+      type: "text_clause_presence"
+      documents: ["Affidavit", "Faculty List"]
+      match_mode: "all"
+      required_phrases: ["Cadre", "Ratio"]
+
+  - id: "R-ENCUMB-001"
+    name: "Land Non-Encumbrance Affirmation"
+    description: "Affidavit or Land Document must declare the campus land is free of all legal encumbrances or designated for perpetual educational use."
+    severity: "WARNING"
+    weight: 10
+    condition:
+      type: "text_clause_presence"
+      documents: ["Affidavit", "Land Document"]
+      match_mode: "any"
+      required_phrases: ["unencumbered", "Educational Use", "Perpetual"]
+

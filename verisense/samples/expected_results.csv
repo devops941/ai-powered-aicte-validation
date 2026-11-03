@@ -1,0 +1,11 @@
+Application_ID,Document_File,Document_Type,Test_Scenario,Expected_Rule_ID,Expected_Severity,Expected_Status,Description
+APP-01-CLEAN,app1_clean_noc.pdf,NOC,Clean baseline,NONE,NONE,No issues found,NOC valid till 2028
+APP-01-CLEAN,app1_clean_affidavit.pdf,Affidavit,Clean baseline,NONE,NONE,No issues found,Land declared 2.50 Acres
+APP-01-CLEAN,app1_clean_faculty.pdf,Faculty List,Clean baseline,NONE,NONE,No issues found,Meets 1:20 ratio and cadre
+APP-01-CLEAN,app1_clean_land.png,Land Document,Clean baseline,NONE,NONE,No issues found,2.50 Acres unencumbered
+APP-01-CLEAN,app1_clean_fire.png,Fire Certificate,Clean baseline,NONE,NONE,No issues found,"Valid till Dec 2026, QR matches"
+APP-02-EXP-NOC,app2_expired_noc.pdf,NOC,Expired NOC,R-NOC-001,CRITICAL,Flagged,NOC expired on 31-May-2023
+APP-03-NO-FIRE,MISSING,Fire Certificate,Mandatory doc missing,R-DOC-001,CRITICAL,Flagged,Fire Safety Certificate not uploaded
+APP-04-MISMATCH,app4_mismatch_land.png,Land Document,Institution name discrepancy,R-NAME-001,WARNING,Flagged,Apex Clg of Tech does not match Apex Institute of Technology
+APP-05-TAMPER,app5_tampered_land.png,Land Document,Altered/spliced image patch,R-TAMPER-001,CRITICAL,Flagged,Inconsistent box/pixel variance detected in land area
+APP-06-FAKE-QR,app6_fakeqr_fire.png,Fire Certificate,QR payload discrepancy,R-QR-001,CRITICAL,Flagged,QR payload does not match certificate metadata

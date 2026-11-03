@@ -1,0 +1,230 @@
+ai powered application validation document authetication regulatory complince verification
+
+AICTE VeriSense: AI-Powered Application Validation, Document Authentication and Regulatory Compliance Verification 
+
+Problem
+AICTE's verification of Extension of Approval (EoA) applications is largely manual. Officials must scrutinise a large volume of documents, including NOCs, affidavits, faculty records and infrastructure details. Submissions often contain missing, expired, altered or inconsistent files, and confirmations from issuing authorities are delayed. This makes processing slow, error-prone and hard to keep consistent, and it leaves officials spending time on routine checks instead of the cases that need judgement.
+
+Proposed Solution
+AICTE VeriSense is an AI-enabled decision-support system that pre-validates applications before they reach an official. It does not replace AICTE's existing systems or its decision-making. It works as an additive layer connected through standard REST APIs.
+
+When an application is received, the system detects its category and automatically loads the matching checklist from the Approval Process Handbook. It then runs five parallel checks:
+
+Document OCR, data extraction and completeness check (PaddleOCR / DocTR with LayoutLMv3 / Donut).
+Cross-check against the institution's historical records in AICTE systems.
+Anomaly and potential forgery detection using OpenCV and PyTorch (CNN-Transformer hybrids).
+Issuing-authority verification where possible, through APIs, QR codes and digital signatures.
+Infrastructure evidence analysis using computer vision (YOLOv8 / Detectron2) to flag cases that may need physical inspection.
+
+The results are combined into a structured Validation Report with a risk score and links to the evidence. Cases needing attention are shown on a dashboard for authorized officials only, and every step is recorded in an immutable audit trail.
+
+Key Innovations
+
+Evidence-linked, explainable flags. Each flag shows the exact evidence, the rule applied, the source and a timestamp, so there are no black-box decisions.
+Hybrid pipeline. AICTE records, OCR, anomaly detection and issuing-authority verification work together in one workflow.
+No-code rules engine. JSON/YAML rules and decision trees keep the system aligned with the latest Handbook without code changes.
+Cross-document consistency checks that catch mismatches across submitted files.
+Human-in-the-loop by design. The AI never auto-approves or auto-rejects, and infrastructure vision checks are advisory only. Final authority stays with AICTE officials.
+Graceful fallback. If an external source is unavailable, the case is marked "Manual Review Required".
+
+Technical Approach
+
+Frontend: React, Tailwind, Recharts
+Backend: FastAPI
+Document AI: PaddleOCR / DocTR, LayoutLMv3 / Donut
+Forgery detection: OpenCV, PyTorch
+Infrastructure CV: YOLOv8 / Detectron2
+Rules engine: JSON/YAML rules and decision trees
+Storage: PostgreSQL, MinIO
+Security: JWT-based RBAC, encryption at rest, access logging
+Integration: REST APIs for the AICTE portal and external sources
+
+Prototype Status
+About 50% of the prototype is complete. The core modules are in place, including the executive scrutiny dashboard, application intake and queue, document viewer and OCR, validation modules, risk and evidence explorer, validation report, institutional history, and checklist and rules management. The remaining features and improvements are in progress. The prototype is being demonstrated on synthetic and anonymized datasets covering clean, incomplete, expired, anomalous and infrastructure-gap cases.
+
+Feasibility and Viability
+The solution is built on mature open-source OCR, computer vision and anomaly-detection tools. The core modules (OCR, consistency checks, anomaly flags and dashboard) can be built within hackathon timelines. The main challenges and mitigations are:
+
+Limited real data: synthetic and anonymized datasets.
+Evolving Handbook: configurable rules engine.
+Unavailable external sources: manual-review fallback.
+False positives: evidence-linked flags with mandatory human verification.
+Data security: role-based access, encryption, audit logs and a retention policy.
+
+The path to production is: prototype, then a limited-category pilot, then full AICTE integration. It can be deployed as a secure government-cloud service with role-based access.
+
+Impact and Benefits
+
+Cuts repetitive manual scrutiny and reduces processing time.
+Detects missing, expired, inconsistent or anomalous submissions early.
+Improves consistency, transparency, auditability and accountability.
+Lets officials focus only on flagged cases that need human attention or inspection.
+Identifies infrastructure and compliance gaps early.
+Extends to UGC and State Technical Boards, giving a reusable compliance engine that improves with more data and updated rules.
+
+Outcome
+AICTE VeriSense gives faster, fairer and fully auditable approvals. Automation handles routine pre-validation, and final decisions stay with AICTE officials.
+
+
+
+
+
+You are my senior Python mentor and pair programmer. Help me build a college
+project called "AICTE VeriSense" step by step.
+
+PROJECT: An AI-assisted decision-support tool that pre-validates Extension of
+Approval (EoA) applications for AICTE. Users upload application documents
+(NOC, affidavit, faculty list, land document, fire certificate). The system
+extracts text with OCR, checks the documents against rules from a YAML file,
+compares fields across documents, does simple tamper detection and QR
+verification, calculates a risk score, and shows a Validation Report on a
+dashboard.
+
+HARD RULES:
+- The system never says "Approved" or "Rejected". It only says "Flagged" or
+  "No issues found". Final decisions stay with human officials.
+- Every flag must show: issue, document, rule ID, evidence, timestamp.
+- If something cannot be verified, show "Manual Review Required".
+- Use only free, open-source tools. No paid APIs. Must run on a laptop with
+  no GPU and 8 GB RAM, and work offline after installation.
+- Use synthetic/fake data only.
+
+TECH STACK:
+- Python 3.10+, Streamlit (UI), SQLite (database)
+- EasyOCR or pytesseract (OCR), OpenCV + Pillow (image checks)
+- PyMuPDF + pdfplumber (PDF handling), pyzbar (QR codes)
+- PyYAML (rules), ReportLab (PDF report), pandas, Plotly (charts)
+
+FOLDER STRUCTURE:
+verisense/
+  app.py, db.py, ocr.py, extract.py, rules.yaml, rules_engine.py,
+  tamper.py, qr_check.py, risk.py, report.py, samples/, uploads/,
+  requirements.txt, README.md
+
+HOW WE WORK:
+- I will ask for one step at a time. Do only that step.
+- For each step give: (1) what we are building and why, (2) the complete
+  code for each file, (3) how to run and test it, (4) what output I should
+  expect, (5) common errors and fixes.
+- Keep code simple, commented, and beginner-friendly. No over-engineering.
+- Do not move on until I say the step works.
+
+Reply "Ready" and wait for my first step.
+
+Prompt 1: Setup and database
+Step 1: Project setup and database.
+- Give me the folder structure, requirements.txt, and setup commands
+  (virtual environment, installing packages, Tesseract notes for Windows).
+- Write db.py with SQLite tables: users, institutions, applications,
+  documents, flags, audit_log (who, action, timestamp).
+- Add functions to create tables, insert and fetch records, and write to the
+  audit log.
+- Add a small test script that creates the DB and inserts sample rows.
+
+Prompt 2: Sample data
+Step 2: Synthetic sample data.
+- Give me a list of 15-20 fake documents I should create for ONE application
+  category: "Extension of Approval: add a new course".
+- Include: clean sets, expired NOC, missing fire certificate, name mismatch
+  (e.g. "ABC Clg" vs "ABC College"), edited/tampered land document, and a
+  fake QR code.
+- Tell me exactly what text each document should contain (name, date,
+  certificate number, validity) so OCR can read it.
+- Give a Python script that generates fake documents as images/PDFs and
+  creates QR codes with the qrcode library.
+- Create a table (expected_results) of what problem each sample should
+  trigger, so I can measure accuracy later.
+
+Prompt 3: Upload and OCR
+Step 3: Upload and OCR.
+- Write ocr.py that takes a PDF or image and returns the extracted text
+  (use EasyOCR; for PDFs use PyMuPDF to extract text first and fall back to
+  OCR for scanned pages).
+- Write a first version of app.py with Streamlit: sidebar menu, an upload
+  page, and a display of the extracted text.
+- Save uploaded files in the uploads/ folder and record them in the DB.
+
+Prompt 4: Field extraction
+Step 4: Field extraction.
+- Write extract.py with regex-based functions to pull out: institution name,
+  document type, certificate number, issue date, expiry/validity date,
+  address, land area.
+- Return a dictionary per document with the field value and the exact text
+  snippet it came from (needed as evidence).
+- Handle different date formats (DD-MM-YYYY, DD/MM/YYYY, 12 March 2024).
+- Test it against my sample documents and show a results table.
+
+Prompt 5: Checklist and rules engine
+Step 5: Checklist and rules engine.
+- Create rules.yaml containing: the checklist of required documents for the
+  category, and 8-10 rules, each with id, name, description, severity weight,
+  and condition. Include rules such as: required document present, NOC not
+  expired, fire certificate valid, institution name same across all
+  documents, land area matches, certificate number format valid.
+- Write rules_engine.py that reads the YAML and runs every rule on the
+  extracted data.
+- Each rule result must return: rule_id, status (pass/fail/manual_review),
+  document, evidence text, timestamp.
+- Make it so I can add a new rule by editing YAML only, not code.
+
+Prompt 6: Cross-checks and history
+Step 6: Cross-document and historical checks.
+- Add cross-document comparison: name, address, dates must agree across
+  files. Use fuzzy matching (rapidfuzz) so "ABC Clg" vs "ABC College" is
+  caught with a similarity score as evidence.
+- Create a mock "AICTE history" table in SQLite (fake past approvals,
+  intake, land area, last approval year).
+- Add a check comparing the new application against this history and flag
+  mismatches.
+
+Prompt 7: Tamper detection and QR check
+
+Step 7: Tamper detection and QR verification.
+- Write tamper.py with: (a) PDF metadata check (creator software, creation
+  vs modification date, flag if edited with Photoshop/online editors),
+  (b) Error Level Analysis on images with OpenCV/Pillow, returning a score
+  and a heatmap image to show suspicious regions.
+- Write qr_check.py that decodes a QR code from an image/PDF page and
+  compares it with a mock authority database in SQLite. If no match or no
+  QR, return "Manual Review Required".
+- Explain the limits honestly: results are indicators, not proof.
+
+Prompt 8: Risk score and report
+Step 8: Risk score and Validation Report.
+- Write risk.py: score = weighted sum of failed rules (use weights from
+  rules.yaml), capped at 100. Map to Low (0-30), Medium (31-60),
+  High (61-100).
+- Write report.py using ReportLab to produce a PDF containing: institution,
+  risk level, list of flags with rule ID, document, evidence, timestamp, and
+  the disclaimer "Decision support only. Final decision rests with AICTE
+  officials."
+- Add a download button in Streamlit.
+
+Prompt 9: Dashboard and login
+Step 9: Full UI.
+- Build the final Streamlit app with pages: Login (2 roles: Official and
+  Admin), Dashboard (metric cards, bar chart of common issues, pie chart of
+  risk levels, table of flagged applications), New Application, Application
+  Detail (tabs: Summary, Documents, Flags & Evidence, History), Audit Log,
+  and Rules (Admin only).
+- Document tab: show the image beside the OCR text.
+- Show only "Flagged" / "No issues found" labels. Never "Approved/Rejected".
+- Log every action in the audit table.
+
+Prompt 10: Testing and evaluation
+Step 10: Testing and evaluation.
+- Write a script that runs the full pipeline on all my sample applications
+  and compares the output with expected_results.
+- Produce a table with true positives, false positives, false negatives,
+  precision, recall, and processing time per application.
+- Suggest improvements for the cases the system missed.
+- Then help me write: README.md, project report outline (abstract,
+  problem, objectives, architecture, methodology, results, limitations,
+  future scope), and 15 viva questions with answers.
+
+How to use these well
+Run the code after every step. If there is an error, paste the full error message back and ask “fix this”.
+If a step is too big, reply: “Break this step into smaller parts and give me part 1 only.”
+Keep one chat for the whole project so the AI remembers earlier files, or paste Prompt 0 again in a new chat.
+Save your work with Git after each working step.
+Do not skip Step 2. Without sample data, nothing can be tested.

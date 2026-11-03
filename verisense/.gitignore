@@ -1,0 +1,19 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Database (auto-generated)
+verisense.db
+
+# User uploads (runtime data)
+uploads/
+
+# Logs
+*.log
+
+# Environment
+.env
