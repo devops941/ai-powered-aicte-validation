@@ -1,3 +1,4 @@
+
 """
 tamper.py - Document Tamper Detection & Error Level Analysis (ELA) for AICTE VeriSense.
 Detects post-issuance PDF editing, software signatures (Photoshop, Canva, Sejda, etc.),
@@ -10,7 +11,10 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 import pymupdf as fitz
 from PIL import Image, ImageChops, ImageEnhance
-import cv2
+try:
+    import cv2
+except Exception:
+    cv2 = None
 import numpy as np
 
 
@@ -158,7 +162,7 @@ def perform_ela(
     # Use unscaled difference array for objective statistical compression error evaluation
     raw_diff_arr = np.array(diff)
     if len(raw_diff_arr.shape) == 3:
-        raw_gray = cv2.cvtColor(raw_diff_arr, cv2.COLOR_RGB2GRAY)
+        raw_gray = cv2.cvtColor(raw_diff_arr, cv2.COLOR_RGB2GRAY) if cv2 is not None else np.mean(raw_diff_arr, axis=2).astype(np.uint8)
     else:
         raw_gray = raw_diff_arr
 

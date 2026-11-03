@@ -9,7 +9,10 @@ import io
 from typing import Dict, Any, Optional
 import pymupdf as fitz
 from PIL import Image
-import cv2
+try:
+    import cv2
+except Exception:
+    cv2 = None
 import numpy as np
 from db import lookup_authority_qr, DB_PATH
 
@@ -39,9 +42,9 @@ def decode_qr_from_file(file_path: str) -> Optional[str]:
         pix = page.get_pixmap(dpi=200)
         img_pil = Image.open(io.BytesIO(pix.tobytes("png"))).convert("RGB")
         doc.close()
-        cv_img = cv2.cvtColor(np.array(img_pil), cv2.COLOR_RGB2BGR)
+        cv_img = cv2.cvtColor(np.array(img_pil), cv2.COLOR_RGB2BGR) if cv2 is not None else None
     else:
-        cv_img = cv2.imread(file_path)
+        cv_img = cv2.imread(file_path) if cv2 is not None else None
 
     if cv_img is None:
         return None
