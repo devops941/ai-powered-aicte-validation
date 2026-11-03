@@ -72,7 +72,10 @@ export async function runBackendValidation(
       });
     }
 
-    if (!res.ok) throw new Error(`Validation failed with status ${res.status}`);
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error(`Backend error ${res.status}: ${errText}`);
+    }
     return await res.json();
   } catch (err) {
     console.error('Error executing backend validation:', err);

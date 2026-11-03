@@ -912,7 +912,20 @@ middleware = [
     )
 ]
 
-app = Starlette(routes=routes, middleware=middleware)
+async def server_error_handler(request, exc):
+    import traceback
+    traceback.print_exc()
+    return JSONResponse(
+        {"error": str(exc), "status": "error", "message": "Internal Server Error"},
+        status_code=500,
+        headers={"Access-Control-Allow-Origin": "*"}
+    )
+
+app = Starlette(
+    routes=routes,
+    middleware=middleware,
+    exception_handlers={500: server_error_handler, Exception: server_error_handler}
+)
 
 if __name__ == "__main__":
     print("Starting AI Powered AICTE Document Verification Backend API on http://127.0.0.1:8000 ...")

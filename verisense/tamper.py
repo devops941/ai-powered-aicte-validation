@@ -131,6 +131,11 @@ def perform_ela(
     else:
         orig_img = Image.open(file_path).convert("RGB")
 
+    # Downscale large images to keep ELA fast and memory-light
+    if orig_img.width > 1200 or orig_img.height > 1200:
+        orig_img = orig_img.copy()
+        orig_img.thumbnail((1200, 1200), Image.Resampling.LANCZOS)
+
     # 2. Resave as JPEG at specified quality in-memory
     buf = io.BytesIO()
     orig_img.save(buf, "JPEG", quality=quality)

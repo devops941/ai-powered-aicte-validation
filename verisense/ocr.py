@@ -5,6 +5,11 @@ Handles both searchable PDFs (via PyMuPDF) and scanned documents/images (via Eas
 
 import os
 import io
+
+# Optimize threading for lightweight container hosting (avoids high RAM usage on Render)
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
 import hashlib
 from typing import Tuple, Optional
 import pymupdf as fitz  # Modern PyMuPDF import
@@ -57,6 +62,10 @@ def ocr_image(image: Image.Image) -> str:
     Extracts text from a PIL Image.
     Uses RapidOCR (ONNX) first; falls back to EasyOCR and PyTesseract.
     """
+    # Downscale high-resolution images to conserve RAM on container hosting
+    if image.width > 1200 or image.height > 1200:
+        image = image.copy()
+        image.thumbnail((1200, 1200), Image.Resampling.LANCZOS)
     # 1. Try RapidOCR (fast, high-accuracy, runs on CPU via ONNX)
     engine = get_rapidocr_engine()
     if engine is not None:

@@ -15,7 +15,11 @@ DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "verisense.db
 
 def get_connection(db_path: str = DB_PATH) -> sqlite3.Connection:
     """Creates a database connection with foreign keys enabled."""
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=30.0)
+    try:
+        conn.execute("PRAGMA journal_mode = WAL;")
+    except Exception:
+        pass
     conn.row_factory = sqlite3.Row  # Access columns by name: row["column_name"]
     conn.execute("PRAGMA foreign_keys = ON;")
     return conn
