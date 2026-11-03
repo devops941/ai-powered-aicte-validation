@@ -24,7 +24,7 @@ def get_rapidocr_engine():
     if _rapidocr_engine is None:
         try:
             from rapidocr_onnxruntime import RapidOCR
-            _rapidocr_engine = RapidOCR()
+            _rapidocr_engine = RapidOCR(use_angle_cls=False)
         except Exception:
             _rapidocr_engine = False
     return _rapidocr_engine if _rapidocr_engine is not False else None
@@ -62,10 +62,10 @@ def ocr_image(image: Image.Image) -> str:
     Extracts text from a PIL Image.
     Uses RapidOCR (ONNX) first; falls back to EasyOCR and PyTesseract.
     """
-    # Downscale high-resolution images to conserve RAM on container hosting
-    if image.width > 1200 or image.height > 1200:
+    # Downscale high-resolution images to conserve RAM & CPU time on container hosting
+    if image.width > 850 or image.height > 850:
         image = image.copy()
-        image.thumbnail((1200, 1200), Image.Resampling.LANCZOS)
+        image.thumbnail((850, 850), Image.Resampling.BILINEAR)
     # 1. Try RapidOCR (fast, high-accuracy, runs on CPU via ONNX)
     engine = get_rapidocr_engine()
     if engine is not None:
